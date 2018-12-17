@@ -139,3 +139,28 @@ class TestIntervalTree2D(TestCase):
                 expected = list(sorted(expected))
                 self.assertEqual(actual, expected)
 
+    def test_pop(self):
+        testee = Tree(
+            [(0, 300), (0, 300)],
+            key=lambda v: v.box
+        )
+        #                                  top  left  bottom  right
+        up_left1 =     C('up-left1',         0,    0,    149,  149); testee.add(up_left1)
+        up_left2 =     C('up-left2',        50,   50,     60,   60); testee.add(up_left2)
+        center =       C('center',          10,   10,    290,  290); testee.add(center)
+        bottom_left =  C('bottom-left',    150,    0,    299,  149); testee.add(bottom_left)
+        up_right =     C('up-right',         0,  150,    149,  299); testee.add(up_right)
+        bottom_right = C('bottom-right',   150,  150,    299,  299); testee.add(bottom_right)
+
+        with self.subTest(i='poped item is as expected'):
+            actual = [node.value for node in testee.pop((10, 10))]
+            actual.sort()
+            expected = ['up-left1', 'center']
+            expected.sort()
+            self.assertEqual(expected, actual)
+
+        with self.subTest(i='remain not poped items'):
+            actual = list(testee)
+            self.assertEqual({up_left2, bottom_left, up_right, bottom_right}, set(actual))
+            self.assertEqual(4, len(actual))
+
